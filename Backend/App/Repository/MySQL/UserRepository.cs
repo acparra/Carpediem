@@ -98,9 +98,6 @@ namespace Carpediem.Repository.MySQL
                         throw new RepositoryException("User could not be updated", ex);
                 }
             }
-
-
-            return entity;
         }
 
         public async Task<bool> Delete(int id)

@@ -2,19 +2,24 @@ using System.Net;
 using System.Text.Json.Serialization;
 using Carpediem.Controllers.Utils;
 using Carpediem.Service.Users;
+using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Carpediem.Controllers.Users
 {
     [ApiController]
     [Route("users")]
+    [Authorize(Roles = "Administrador")]
     public class UserController : ControllerBase
     {
         private readonly UserService UsersService;
+        private readonly IValidator<AddUserRequest> AddUserRequestValidator;
 
-        public UserController(UserService usersService)
+        public UserController(UserService usersService, IValidator<AddUserRequest> addUserRequestValidator)
         {
             UsersService = usersService;
+            AddUserRequestValidator = addUserRequestValidator;
         }
 
         [HttpGet]
@@ -25,7 +30,6 @@ namespace Carpediem.Controllers.Users
             {
                 ID = u.ID,
                 Username = u.Username,
-                Password = u.Password,
                 RolID = u.RolID
             });
 
@@ -56,7 +60,6 @@ namespace Carpediem.Controllers.Users
             {
                 ID = user.ID,
                 Username = user.Username,
-                Password = user.Password,
                 RolID = user.RolID
             };
 
@@ -87,7 +90,6 @@ namespace Carpediem.Controllers.Users
             {
                 ID = user.ID,
                 Username = user.Username,
-                Password = user.Password,
                 RolID = user.RolID
             };
 
@@ -103,6 +105,16 @@ namespace Carpediem.Controllers.Users
         [HttpPost]
         public async Task<IActionResult> Add(AddUserRequest data)
         {
+            var validationResult = AddUserRequestValidator.Validate(data);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new ControllerResponse
+                {
+                    Message = "Validation error",
+                    Data = validationResult.Errors.Select(e => e.ErrorMessage).ToArray()
+                });
+            }
+
             var user = new AddUserDto
             {
                 Username = data.Username,
@@ -114,7 +126,6 @@ namespace Carpediem.Controllers.Users
             {
                 ID = result.ID,
                 Username = result.Username,
-                Password = result.Password,
                 RolID = result.RolID
             };
 
@@ -152,7 +163,6 @@ namespace Carpediem.Controllers.Users
             {
                 ID = result.ID,
                 Username = result.Username,
-                Password = result.Password,
                 RolID = result.RolID
             };
 
@@ -198,8 +208,6 @@ namespace Carpediem.Controllers.Users
         public int ID { get; set; }
         [JsonPropertyName("username")]
         public string Username { get; set; }
-        [JsonPropertyName("password")]
-        public string Password { get; set; }
         [JsonPropertyName("rol_id")]
         public int RolID { get; set; }
     }
@@ -212,5 +220,27 @@ namespace Carpediem.Controllers.Users
         public string Password { get; set; }
         [JsonPropertyName("rol_id")]
         public int RolID { get; set; }
+    }
+
+    // Validators
+
+    public class AddUserRequestValidator : AbstractValidator<AddUserRequest>
+    {
+        public AddUserRequestValidator()
+        {
+            RuleFor(x => x.Username).NotEmpty().WithMessage("El nombre de usuario es requerido");
+            RuleFor(x => x.Password).NotEmpty()
+            .MinimumLength(10)
+            .WithMessage("La clave debe tener al menos 10 caracteres")
+            .Matches("[a-z]")
+            .WithMessage("La clave debe tener al menos una letra minúscula")
+            .Matches("[A-Z]")
+            .WithMessage("La clave debe tener al menos una letra mayúscula")
+            .Matches("[0-9]")
+            .WithMessage("La clave debe tener al menos un número")
+            .Matches("[^a-zA-Z0-9]")
+            .WithMessage("La clave debe tener al menos un caracter especial");
+            RuleFor(x => x.RolID).NotEmpty().WithMessage("El rol no puede ser 0");
+        }
     }
 }

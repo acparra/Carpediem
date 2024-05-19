@@ -1,5 +1,6 @@
 using Carpediem.Repository;
 using Carpediem.Repository.Entities;
+using Carpediem.Utils;
 
 namespace Carpediem.Service.Users
 {
@@ -19,7 +20,6 @@ namespace Carpediem.Service.Users
             {
                 ID = u.ID,
                 Username = u.Username,
-                Password = u.Password,
                 RolID = u.RolID
             });
 
@@ -37,7 +37,6 @@ namespace Carpediem.Service.Users
             {
                 ID = user.ID,
                 Username = user.Username,
-                Password = user.Password,
                 RolID = user.RolID
             };
 
@@ -55,7 +54,6 @@ namespace Carpediem.Service.Users
             {
                 ID = user.ID,
                 Username = user.Username,
-                Password = user.Password,
                 RolID = user.RolID
             };
 
@@ -64,10 +62,11 @@ namespace Carpediem.Service.Users
 
         public async Task<UserDto> Add(AddUserDto data)
         {
+            var password = PasswordService.HashPassword(data.Password);
             var user = new UserEntity
             {
                 Username = data.Username,
-                Password = data.Password,
+                Password = password,
                 RolID = data.RolID
             };
             var result = await userRepository.Add(user);
@@ -75,7 +74,6 @@ namespace Carpediem.Service.Users
             {
                 ID = result.ID,
                 Username = result.Username,
-                Password = result.Password,
                 RolID = result.RolID
             };
 
@@ -100,7 +98,6 @@ namespace Carpediem.Service.Users
             {
                 ID = result.ID,
                 Username = result.Username,
-                Password = result.Password,
                 RolID = result.RolID
             };
 
@@ -119,7 +116,6 @@ namespace Carpediem.Service.Users
     {
         public int ID { get; set; }
         public string Username { get; set; }
-        public string Password { get; set; }
         public int RolID { get; set; }
     }
 
