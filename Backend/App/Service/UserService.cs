@@ -92,6 +92,10 @@ namespace Carpediem.Service.Users
                 RolID = data.RolID
             };
             var result = await userRepository.Update(user);
+            if (result == null)
+            {
+                return null;
+            }
             var response = new UserDto
             {
                 ID = result.ID,
