@@ -82,11 +82,12 @@ namespace Carpediem.Service.Users
 
         public async Task<UserDto> Update(UpdateUserDto data)
         {
+            var password = PasswordService.HashPassword(data.Password);
             var user = new UserEntity
             {
                 ID = data.ID,
                 Username = data.Username,
-                Password = data.Password,
+                Password = password,
                 RolID = data.RolID
             };
             var result = await userRepository.Update(user);

@@ -142,6 +142,16 @@ namespace Carpediem.Controllers.Users
         [Route("{id}")]
         public async Task<IActionResult> Update(int id, AddUserRequest data)
         {
+            var validationResult = AddUserRequestValidator.Validate(data);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new ControllerResponse
+                {
+                    Message = "Validation error",
+                    Data = validationResult.Errors.Select(e => e.ErrorMessage).ToArray()
+                });
+            }
+
             var user = new UpdateUserDto
             {
                 ID = id,
