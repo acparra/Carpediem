@@ -51,6 +51,7 @@ namespace Carpediem.Controllers.Users
                     Data = null
                 });
             }
+
             var response = new UserResponse
             {
                 ID = user.ID,
@@ -81,6 +82,7 @@ namespace Carpediem.Controllers.Users
                     Data = null
                 });
             }
+
             var response = new UserResponse
             {
                 ID = user.ID,
@@ -137,6 +139,15 @@ namespace Carpediem.Controllers.Users
                 RolID = data.RolID
             };
             var result = await UsersService.Update(user);
+            if (result == null)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, new ControllerResponse
+                {
+                    Message = "User not updated",
+                    Data = null
+                });
+            }
+
             var response = new UserResponse
             {
                 ID = result.ID,

@@ -48,15 +48,19 @@ namespace Carpediem.Repository.MySQL
             var query = @"INSERT INTO users (username, password, rol_id) VALUES (@username, @password, @rolid);
             SELECT LAST_INSERT_ID();";
 
-            try {
+            try
+            {
                 MySqlConnection con = new(connection);
 
                 var result = await con.QuerySingleOrDefaultAsync<int>(query, entity);
                 entity.ID = result;
 
                 return entity;
-            } catch (MySqlException ex) {
-                switch (ex.Number) {
+            }
+            catch (MySqlException ex)
+            {
+                switch (ex.Number)
+                {
                     case 1062:
                         throw new RepositoryException("Username already exists", ex);
                     case 1452:
@@ -71,13 +75,21 @@ namespace Carpediem.Repository.MySQL
         {
             var query = "UPDATE users SET username = @username, password = @password, rol_id = @rolid WHERE id = @id";
 
-            try {
+            try
+            {
                 MySqlConnection con = new(connection);
+                var result = await con.ExecuteAsync(query, entity);
+                if (result == 0)
+                {
+                    return null;
+                }
 
-                await con.ExecuteAsync(query, entity);
+                return entity;
             }
-            catch(MySqlException ex) {
-                switch (ex.Number) {
+            catch (MySqlException ex)
+            {
+                switch (ex.Number)
+                {
                     case 1062:
                         throw new RepositoryException("Username already exists", ex);
                     case 1452:
@@ -95,12 +107,16 @@ namespace Carpediem.Repository.MySQL
         {
             var query = "DELETE FROM users WHERE id = @id";
 
-            try {
-            MySqlConnection con = new(connection);
+            try
+            {
+                MySqlConnection con = new(connection);
 
-            return await con.ExecuteAsync(query, new { id }) > 0;
-            } catch (MySqlException ex) {
-                switch (ex.Number) {
+                return await con.ExecuteAsync(query, new { id }) > 0;
+            }
+            catch (MySqlException ex)
+            {
+                switch (ex.Number)
+                {
                     case 1451:
                         throw new RepositoryException("User has dependencies", ex);
                     default:

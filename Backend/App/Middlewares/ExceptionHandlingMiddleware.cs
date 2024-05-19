@@ -4,8 +4,10 @@ using Carpediem.Controllers.Utils;
 using Carpediem.Utils;
 using Serilog;
 
-namespace Carpediem.Middlewares {
-    public class ExceptionHandlingMiddleware{
+namespace Carpediem.Middlewares
+{
+    public class ExceptionHandlingMiddleware
+    {
         private readonly RequestDelegate _next;
 
         public ExceptionHandlingMiddleware(RequestDelegate next)
@@ -23,8 +25,9 @@ namespace Carpediem.Middlewares {
             {
                 Log.Warning(ex, ex.Message);
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                context.Response.ContentType = "application/json"; 
-                var response = new ControllerResponse{
+                context.Response.ContentType = "application/json";
+                var response = new ControllerResponse
+                {
                     Message = ex.Message,
                     Data = null
                 };
@@ -34,8 +37,9 @@ namespace Carpediem.Middlewares {
             {
                 Log.Error(ex, ex.Message);
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Response.ContentType = "application/json"; 
-                var response = new ControllerResponse{
+                context.Response.ContentType = "application/json";
+                var response = new ControllerResponse
+                {
                     Message = "Internal server error ocurred",
                     Data = null
                 };
