@@ -1,4 +1,5 @@
 using Carpediem.Repository.Entities;
+using Carpediem.Utils;
 using Dapper;
 using MySqlConnector;
 
@@ -47,27 +48,45 @@ namespace Carpediem.Repository.MySQL
             var query = @"INSERT INTO users (username, password, rol_id) VALUES (@username, @password, @rolid);
             SELECT LAST_INSERT_ID();";
 
-            MySqlConnection con = new(connection);
+            try {
+                MySqlConnection con = new(connection);
 
-            var result = await con.QuerySingleOrDefaultAsync<int>(query, entity);
-            if (result == 0) {
-                return null;
+                var result = await con.QuerySingleOrDefaultAsync<int>(query, entity);
+                entity.ID = result;
+
+                return entity;
+            } catch (MySqlException ex) {
+                switch (ex.Number) {
+                    case 1062:
+                        throw new RepositoryException("Username already exists", ex);
+                    case 1452:
+                        throw new RepositoryException("Role not found", ex);
+                    default:
+                        throw new RepositoryException("User could not be created", ex);
+                }
             }
-            entity.ID = result;
-
-            return entity;
         }
 
         public async Task<UserEntity> Update(UserEntity entity)
         {
             var query = "UPDATE users SET username = @username, password = @password, rol_id = @rolid WHERE id = @id";
-            MySqlConnection con = new(connection);
 
-            var result = await con.ExecuteAsync(query, entity);
-            if (result == 0)
-            {
-                return null;
+            try {
+                MySqlConnection con = new(connection);
+
+                await con.ExecuteAsync(query, entity);
             }
+            catch(MySqlException ex) {
+                switch (ex.Number) {
+                    case 1062:
+                        throw new RepositoryException("Username already exists", ex);
+                    case 1452:
+                        throw new RepositoryException("Role not found", ex);
+                    default:
+                        throw new RepositoryException("User could not be updated", ex);
+                }
+            }
+
 
             return entity;
         }
@@ -75,9 +94,19 @@ namespace Carpediem.Repository.MySQL
         public async Task<bool> Delete(int id)
         {
             var query = "DELETE FROM users WHERE id = @id";
+
+            try {
             MySqlConnection con = new(connection);
 
             return await con.ExecuteAsync(query, new { id }) > 0;
+            } catch (MySqlException ex) {
+                switch (ex.Number) {
+                    case 1451:
+                        throw new RepositoryException("User has dependencies", ex);
+                    default:
+                        throw new RepositoryException("User could not be deleted", ex);
+                }
+            }
         }
 
     }

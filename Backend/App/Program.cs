@@ -1,6 +1,8 @@
 using Carpediem.Middlewares;
 using Carpediem.Repository;
 using Carpediem.Service.Users;
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,6 +14,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IUserRepository, Carpediem.Repository.MySQL.UserRepository>();
 builder.Services.AddSingleton<UserService>();
+
+Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
 
 var app = builder.Build();
 
