@@ -108,14 +108,6 @@ namespace Carpediem.Controllers.Users
                 RolID = data.RolID
             };
             var result = await UsersService.Add(user);
-            if (result == null)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, new ControllerResponse
-                {
-                    Message = "User not added",
-                    Data = null
-                });
-            }
             var response = new UserResponse
             {
                 ID = result.ID,
@@ -126,7 +118,7 @@ namespace Carpediem.Controllers.Users
 
             var controllerResponse = new ControllerResponse
             {
-                Message = response != null ? "User added" : "User not added",
+                Message = "User added",
                 Data = new object[] { response }
             };
 
@@ -145,14 +137,6 @@ namespace Carpediem.Controllers.Users
                 RolID = data.RolID
             };
             var result = await UsersService.Update(user);
-            if (result == null)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, new ControllerResponse
-                {
-                    Message = "User not updated",
-                    Data = null
-                });
-            }
             var response = new UserResponse
             {
                 ID = result.ID,

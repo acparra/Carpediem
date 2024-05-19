@@ -1,6 +1,8 @@
 using System.Net;
 using System.Text.Json;
 using Carpediem.Controllers.Utils;
+using Carpediem.Utils;
+using Serilog;
 
 namespace Carpediem.Middlewares {
     public class ExceptionHandlingMiddleware{
@@ -17,8 +19,20 @@ namespace Carpediem.Middlewares {
             {
                 await _next(context);
             }
+            catch (RepositoryException ex)
+            {
+                Log.Warning(ex, ex.Message);
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                context.Response.ContentType = "application/json"; 
+                var response = new ControllerResponse{
+                    Message = ex.Message,
+                    Data = null
+                };
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            }
             catch (Exception ex)
             {
+                Log.Error(ex, ex.Message);
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = "application/json"; 
                 var response = new ControllerResponse{
