@@ -141,9 +141,9 @@ namespace Carpediem.Controllers.Users
             var result = await UsersService.Update(user);
             if (result == null)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, new ControllerResponse
+                return NotFound(new ControllerResponse
                 {
-                    Message = "User not updated",
+                    Message = "User not found",
                     Data = null
                 });
             }
