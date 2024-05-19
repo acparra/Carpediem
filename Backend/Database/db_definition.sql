@@ -16,14 +16,14 @@ INSERT INTO roles (name) VALUES ('Acudiente');
 CREATE TABLE users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) UNIQUE,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     rol_id INT NOT NULL,
     FOREIGN KEY (rol_id) REFERENCES roles(id)
 );
 
-insert into users (username, password, rol_id) values ('admin', 'admin', 1);
-insert into users (username, password, rol_id) values ('psicologo', 'psicologo', 2);
-insert into users (username, password, rol_id) values ('acudiente', 'acudiente', 3);
+insert into users (username, password, rol_id) values ('admin', '$2a$11$fX7V8DyLf78peomiZjvrg.0eUaFWD3gy4kkngYnydAdRx.nTidp0u', 1);
+insert into users (username, password, rol_id) values ('psicologo', '$2a$11$fX7V8DyLf78peomiZjvrg.0eUaFWD3gy4kkngYnydAdRx.nTidp0u', 2);
+insert into users (username, password, rol_id) values ('acudiente', '$2a$11$fX7V8DyLf78peomiZjvrg.0eUaFWD3gy4kkngYnydAdRx.nTidp0u', 3);
 
 -- Table document_type
 CREATE TABLE document_type (
