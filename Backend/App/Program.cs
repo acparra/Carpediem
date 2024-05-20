@@ -2,6 +2,7 @@ using Carpediem.Middlewares;
 using Carpediem.Repository;
 using Carpediem.Repository.MySQL;
 using Carpediem.Service;
+using Carpediem.Service.Document;
 using Carpediem.Service.Rol;
 using Carpediem.Service.Users;
 using Carpediem.Utils;
@@ -22,10 +23,12 @@ builder.Services.AddToken(builder.Configuration);
 
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IRolRepository, RolRepository>();
+builder.Services.AddSingleton<IDocumentRepository, DocumentRepository>();
 builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<RolService>();
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddSingleton<AuthenticationService>();
+builder.Services.AddSingleton<DocumentService>();
 
 Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
 
